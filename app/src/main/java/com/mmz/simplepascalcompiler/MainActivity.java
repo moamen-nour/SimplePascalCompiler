@@ -9,22 +9,31 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-
+    LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final EditText et_Code = (EditText) findViewById(R.id.et_code);
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                ArrayList<Token> tokens = lexicalAnalyzer.tokenize(et_Code.getText().toString());
+                System.out.println(tokens);
+                SyntaticAnalyzer syntaticAnalyzer = new SyntaticAnalyzer(tokens);
+                boolean parse = syntaticAnalyzer.Parse();
+                System.out.println(parse);
+                et_Code.setText(syntaticAnalyzer.getAssemblyCode());
             }
         });
     }

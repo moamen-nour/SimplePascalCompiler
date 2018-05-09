@@ -1,22 +1,18 @@
 package com.mmz.simplepascalcompiler;
 
+import android.widget.Toast;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
 public class CodeGenerator {
-    private FileWriter fileWriter;
-    private static String assemblyCode = "";
-    private String regA="";
+    private static String assemblyCode;
+    private String regA;
     public CodeGenerator() {
-        File assemblyCode = new File("src/assembly.txt");
-        try {
-            fileWriter = new FileWriter(assemblyCode);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        assemblyCode="";
+        regA="";
     }
 
     public void startProgram(String progName) {
@@ -111,15 +107,8 @@ public class CodeGenerator {
         assemblyCode += "END " + progName;
     }
 
-    public void writeCode() {
-        try {
-            fileWriter.append(assemblyCode);
-            fileWriter.flush();
-            fileWriter.close();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+    public String writeCode() {
+        return assemblyCode;
 
     }
     public void generateFor(String start){

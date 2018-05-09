@@ -11,12 +11,15 @@ public class SyntaticAnalyzer {
     private CodeGenerator codeGenerator = new CodeGenerator();
     private boolean readStmt = false, writeStmt = false;
     private static int index = 0, counterComma = 0, counterID = 0, counterOperation = 0, loopLimit = 3;
+    private String assemblyCode ="No Results. False Syntax";
 
     public SyntaticAnalyzer(ArrayList<Token> tokens) {
         this.tokens = tokens;
     }
-
-    public boolean Parse(ArrayList<Token> tokens) {
+    public String getAssemblyCode(){
+        return assemblyCode ;
+    }
+    public boolean Parse() {
         boolean program, programName, var , idList, begin, stmtList,end;
         program = programKey();
         programName = programName();
@@ -28,7 +31,7 @@ public class SyntaticAnalyzer {
         stmtList = stmtList();
         end = endKey();
         codeGenerator.end(progName);
-        codeGenerator.writeCode();
+        assemblyCode=codeGenerator.writeCode();
         return program & programName & var & idList & begin & stmtList & end;
     }
 

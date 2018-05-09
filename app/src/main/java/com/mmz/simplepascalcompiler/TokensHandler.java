@@ -10,16 +10,27 @@ public class TokensHandler {
 
     public TokensHandler(){
         tokenSpecMap = new HashMap<>();
+        tokenSpecMap.put("PROGRAM" ,1);
+        tokenSpecMap.put("VAR" ,2);
+        tokenSpecMap.put("BEGIN" ,3);
+        tokenSpecMap.put("END" ,4);
+        tokenSpecMap.put("END.",5);
+        tokenSpecMap.put("FOR" ,6);
+        tokenSpecMap.put("READ",7);
+        tokenSpecMap.put("WRITE",8);
+        tokenSpecMap.put("TO",9);
+        tokenSpecMap.put("DO",10);
+        tokenSpecMap.put(";" ,11);
+        tokenSpecMap.put(":=",12);
+        tokenSpecMap.put("+",13);
+        tokenSpecMap.put("," ,14);
+        tokenSpecMap.put("(",15);
+        tokenSpecMap.put(")",16);
+        tokenSpecMap.put("id",17);
+        tokenSpecMap.put("*",18);
+        tokenSpecMap.put("-",19);
+        tokenSpecMap.put("DIV",20);
 
-        File tokenSpecFile = new File("src/compilerFiles/tokenSpecFile.txt");
-        try(Scanner scanner = new Scanner(tokenSpecFile);){
-            while (scanner.hasNextLine()){
-                tokenSpecMap.put(scanner.next() , scanner.nextInt());
-            }
-
-        }catch (FileNotFoundException e){
-            System.out.println("File Not Found");
-        }
     }
 
     public String getTspec (String token){
