@@ -100,7 +100,8 @@ public class CodeGenerator {
             regA = "T"+counter;
         }
     }
-    public void storeDist(String dist){
+    public void storeDist(String dist)
+    {   regA=dist;
         assemblyCode += "STA " + dist + "\n";
     }
     public void end(String progName){
