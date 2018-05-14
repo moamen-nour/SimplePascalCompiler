@@ -8,17 +8,12 @@
     tools:context=".MainActivity"
     android:orientation="horizontal"
     tools:showIn="@layout/activity_main">
-
-    <ListView
-        android:layout_width="20dp"
-        android:id="@+id/lv_lines"
-        android:layout_height="match_parent" />
-
     <EditText
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/et_code"
         android:hint="@string/welcome_message"
-        android:gravity="top" />
+        android:gravity="top"
+        android:layout_margin="8dp"/>
 
 </LinearLayout>
