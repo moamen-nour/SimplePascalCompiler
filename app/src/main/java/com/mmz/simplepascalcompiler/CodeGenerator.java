@@ -1,18 +1,15 @@
 package com.mmz.simplepascalcompiler;
-
-import android.widget.Toast;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
 public class CodeGenerator {
-    private static String assemblyCode;
-    private String regA;
+
+    private static String assemblyCode = "";
+    private String regA="";
     public CodeGenerator() {
-        assemblyCode="";
-        regA="";
+
     }
 
     public void startProgram(String progName) {
@@ -100,8 +97,7 @@ public class CodeGenerator {
             regA = "T"+counter;
         }
     }
-    public void storeDist(String dist)
-    {   regA=dist;
+    public void storeDist(String dist){
         assemblyCode += "STA " + dist + "\n";
     }
     public void end(String progName){
@@ -110,7 +106,6 @@ public class CodeGenerator {
 
     public String writeCode() {
         return assemblyCode;
-
     }
     public void generateFor(String start){
         assemblyCode +="LDX "+start+"\nLOOP ";
@@ -118,4 +113,5 @@ public class CodeGenerator {
     public void terminateFor(String end){
         assemblyCode+="TIX "+end+"\nJLT LOOP\n";
     }
+
 }

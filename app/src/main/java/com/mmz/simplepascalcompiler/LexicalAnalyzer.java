@@ -1,5 +1,6 @@
 package com.mmz.simplepascalcompiler;
 
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -15,7 +16,7 @@ public class LexicalAnalyzer {
     public LexicalAnalyzer (){
         tokensHandler = new TokensHandler();
         tokens = new ArrayList<Token>();
-        pattern = Pattern.compile("(?<token>PROGRAM|VAR|BEGIN|END\\.|END|FOR|READ|WRITE|TO|DO|;|:=|\\+|\\(|\\)|[a-zA-Z][\\w]*|\\*)");
+        pattern = Pattern.compile("(?<token>PROGRAM|VAR|BEGIN|END\\.|END|FOR|READ|WRITE|TO|DO|;|:=|\\+|,|\\(|\\)|[a-zA-Z][\\w]*|\\*)");
     }
 
     public ArrayList<Token> tokenize(String code){
@@ -24,10 +25,16 @@ public class LexicalAnalyzer {
         while (matcher.find()){
             tokens.add(new Token(tokensHandler.getTspec(matcher.group("token")),tokensHandler.getTtype(matcher.group("token")) ));
 
+//        System.out.println(matcher.group("token"));
         }
+
+
+//       for (Token t:tokens) {
+//           System.out.println(t.toString());
+//       }
+
         return tokens;
+
     }
-
-
 
 }

@@ -1,5 +1,6 @@
 package com.mmz.simplepascalcompiler;
 
+
 public class Token {
     private String tokenSpecifier;
     private int tokenType;

@@ -1,12 +1,12 @@
 package com.mmz.simplepascalcompiler;
-
 import java.util.ArrayList;
 import java.util.Stack;
 
 public class AssignStatementHandler {
-    private static int counterT = 0,counterTemp=0;
+    private static int counterT = 0;
     private String dist = "";
-    private CodeGenerator CodeGenerator = new CodeGenerator();
+    private CodeGenerator CodeGenerater = new CodeGenerator();
+
     // A utility function to return precedence of a given operator
     // Higher returned value means higher precedence
     public static int Prec(String s) {
@@ -21,6 +21,7 @@ public class AssignStatementHandler {
         }
         return -1;
     }
+
     // The main method that converts given infix expression
     // to postfix expression.
     public ArrayList<String> infixToPostfix(ArrayList<String> stringList, String dist) {
@@ -70,32 +71,19 @@ public class AssignStatementHandler {
         return result;
 
     }
-    //Method that uses the array list produced by the infix to postfix converter method.
-    //Evaluates the expression and calls the appropriate code generation methods.
+
     public void evaluate(ArrayList<String> result) {
         int index = 0;
         while (result.size() != 1) {
-            if (result.get(index).equals("+")) {
-                CodeGenerator.generateAdd(result.remove(index - 2), result.remove(index - 2), counterT);
+            if (result.get(index) == "+") {
+                CodeGenerater.generateAdd(result.remove(index - 2), result.remove(index - 2), counterT);
                 result.remove(index - 2);
                 result.add(index - 2, "T" + counterT);
                 counterT++;
                 index = 0;
 
-            } else if (result.get(index).equals("*")) {
-                CodeGenerator.generateMul(result.remove(index - 2), result.remove(index - 2), counterT);
-                result.remove(index - 2);
-                result.add(index - 2, "T" + counterT);
-                counterT++;
-                index = 0;
-            } else if (result.get(index).equals("-")) {
-                CodeGenerator.generateSub(result.remove(index - 2), result.remove(index - 2), counterT);
-                result.remove(index - 2);
-                result.add(index - 2, "T" + counterT);
-                counterT++;
-                index = 0;
-            } else if (result.get(index).equals("DIV")) {
-                CodeGenerator.generateDiv(result.remove(index - 2), result.remove(index - 2), counterT);
+            } else if (result.get(index) == "*") {
+                CodeGenerater.generateMul(result.remove(index - 2), result.remove(index - 2), counterT);
                 result.remove(index - 2);
                 result.add(index - 2, "T" + counterT);
                 counterT++;
@@ -103,6 +91,6 @@ public class AssignStatementHandler {
             } else
                 index++;
         }
-        CodeGenerator.storeDist(dist);
+        CodeGenerater.storeDist(dist);
     }
 }
