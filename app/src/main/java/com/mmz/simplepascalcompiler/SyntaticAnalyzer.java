@@ -1,28 +1,41 @@
 package com.mmz.simplepascalcompiler;
+import android.util.Log;
 
+import java.lang.invoke.ConstantCallSite;
 import java.util.ArrayList;
-
+//SyntaticAnaylzer is the class responsible for handling the syntax of the source code.
+//Also called Parser.
+//Main Purpose is checking the source code and outputs either true or false.
+//Secondary Purpose is calling the Code generator within when a single part is recognized as true.
 public class SyntaticAnalyzer {
-
-	private ArrayList<Token> tokens;
-	private ArrayList<String> ids  ;
-	private ArrayList<String> idsRead  ;
-	private ArrayList<String> idsWrite  ;
-	private String progName = "";
-	private CodeGenerator codeGenerator = new CodeGenerator();
-	private boolean readStmt = false, writeStmt = false;
-	private static int index = 0, counterComma = 0, counterID = 0, counterOperation = 0, loopLimit = 3;
+    //Array list to hold tokens returned by tokenize method.
+    private ArrayList<Token> tokens;
+    //Array list to hold variables defined at VAR <id-list>.
+    private ArrayList<String> ids;
+    //Array list to hold variables defined at READ(<id-list>).
+    private ArrayList<String> idsRead;
+    //Array list to hold variables defined at WRITE(<id-list>).
+    private ArrayList<String> idsWrite;
+    //PROGRAM progName
+    private String progName = "";
+    //Created code generator object to preform calls on code generation.
+    private CodeGenerator codeGenerator;
+    private boolean readStmt = false, writeStmt = false;
+    private int counterComma = 0, counterID = 0, counterOperation = 0, loopLimit = 3;
 	private String assemblyCode;
-
-	public SyntaticAnalyzer(ArrayList<Token> tokens) {
+	//Constructor to initialize varaiables.
+	SyntaticAnalyzer(ArrayList<Token> tokens) {
+	    this.codeGenerator= new CodeGenerator();
 		this.tokens = tokens;
-	ids = new ArrayList<>();
-	idsRead = new ArrayList<>();
-	idsWrite = new ArrayList<>();}
-
+	    ids = new ArrayList<>();
+	    idsRead = new ArrayList<>();
+	    idsWrite = new ArrayList<>();
+	}
+	public String getAssemblyCode(){
+        return assemblyCode;
+    }
 	public boolean Parse() {
-		boolean program = false, programName = false, var = false, idList = false, begin = false, stmtList = false,
-				end = false;
+		boolean program, programName, var, idList, begin, stmtList, end;
 		program = programKey();
 		programName = programName();
 		codeGenerator.startProgram(progName);
@@ -33,7 +46,7 @@ public class SyntaticAnalyzer {
 		stmtList = stmtList();
 		end = endKey();
 		codeGenerator.end(progName);
-		codeGenerator.writeCode();
+		assemblyCode= codeGenerator.getCode();
 		return program & programName & var & idList & begin & stmtList & end;
 	}
 	//Method 1 : Check Validity of PROGRAM keyword.
@@ -69,27 +82,28 @@ public class SyntaticAnalyzer {
 	}
 	//Method 4 : Check Validity of ID list.
 	private boolean idList() {
-		while (tokens.get(0).getTokenType() != loopLimit) {
-			if (tokens.get(0).getTokenType() == 17) {
-				counterID++;
-					if (ids.contains(tokens.get(0).getTokenSpecifier()) && readStmt) idsRead.add(tokens.get(0).getTokenSpecifier());
-					else if (ids.contains(tokens.get(0).getTokenSpecifier()) &&writeStmt) idsWrite.add(tokens.get(0).getTokenSpecifier());
-					else if(!writeStmt && !readStmt) ids.add(tokens.get(0).getTokenSpecifier());
-					else break;
-				tokens.remove(0);
-			} else if (tokens.get(0).getTokenType() == 14) {
-				counterComma++;
-				tokens.remove(0);
-			} else
-				break;
-		}
+        while (tokens.get(0).getTokenType() != loopLimit) {
+            if (tokens.get(0).getTokenType() == 17) {
+                counterID++;
+                if (ids.contains(tokens.get(0).getTokenSpecifier()) && readStmt) idsRead.add(tokens.get(0).getTokenSpecifier());
+                else if (ids.contains(tokens.get(0).getTokenSpecifier()) &&writeStmt) idsWrite.add(tokens.get(0).getTokenSpecifier());
+                else if(!writeStmt && !readStmt)
+                    ids.add(tokens.get(0).getTokenSpecifier());
+                else break;
+                tokens.remove(0);
+            } else if (tokens.get(0).getTokenType() == 14) {
+                counterComma++;
+                tokens.remove(0);
+            } else
+                break;
+        }
 
-		if (tokens.get(0).getTokenType() == loopLimit && counterID - counterComma == 1) {
-			counterID = counterComma = 0;
-			return true;
-		}
+        if (tokens.get(0).getTokenType() == loopLimit && counterID - counterComma == 1) {
+            counterID = counterComma = 0;
+            return true;
+        }
 
-		return false;
+        return false;
 	}
 	//Method 5 : Check Validity of BEGIN keyword.
 	private boolean beginKey() {
@@ -141,7 +155,7 @@ public class SyntaticAnalyzer {
 		// if not found --> return false
 		return false;
 	}
-	//Method 10  : Check Validity of "END." keyword
+	//Method 10: Check Validity of "END." keyword
 	private boolean endKey() {
 		if (tokens.get(0).getTokenType() == 5) {
 			tokens.remove(0);
@@ -150,7 +164,7 @@ public class SyntaticAnalyzer {
 		}
 		return false;
 	}
-	//Method 11 : Check Validity of FOR keyword
+	//Method 11: Check Validity of FOR keyword
 	private boolean forKey() {
 		//Token_type = 6 ---> FOR keyword found.
 		if (tokens.get(0).getTokenType() == 6) {
@@ -160,6 +174,7 @@ public class SyntaticAnalyzer {
 		// if not found --> return false
 		return false;
 	}
+	//Method 12: Check Validity of WRITE stmt.
 	private boolean writeStmt() {
 		writeStmt = true;
 		loopLimit = 16;
@@ -176,6 +191,7 @@ public class SyntaticAnalyzer {
 		writeStmt = false;
 		return false;
 	}
+    //Method 12: Check Validity of READ stmt.
 	private boolean readStmt() {
 		readStmt = true;
 		loopLimit = 16;
@@ -192,6 +208,7 @@ public class SyntaticAnalyzer {
 		readStmt = false;
 		return false;
 	}
+    //Method 13: Check Validity of FOR stmt.
 	private boolean forStmt() {
 		String idCounter="",idStart="",idEnd="";
 		// Correct Syntax --> FOR ID := ID to ID
@@ -244,6 +261,7 @@ public class SyntaticAnalyzer {
 		}
 		return false;
 	}
+	//Method 14: stmtList to check a certain stmt type according to key.
 	private boolean stmtList() {
 		//until "END." is reached.
 		while (tokens.get(0).getTokenType() != 5) {
@@ -279,6 +297,7 @@ public class SyntaticAnalyzer {
 
 		return false;
 	}
+	//Method 15: stmt to handle one-line loops.
 	private boolean stmt() {
 		//IF the stmt is a read statement.
 		if (readKey()) {
@@ -303,9 +322,9 @@ public class SyntaticAnalyzer {
 		//The Stmt is not valid.
 		else
 			return false;
-
 		return true;
 	}
+    //Method 16: Check Validity of assign stmt.
 	private boolean assign(String dist) {
 		ArrayList<String> arr = new ArrayList<String>();
 		boolean flag = true;
@@ -326,8 +345,8 @@ public class SyntaticAnalyzer {
 				else if(tokens.get(0).getTokenType() == 19)
 					arr.add("-");
 				else
-					arr.add("DIV");
-				tokens.remove(0);
+                    arr.add("DIV");
+                tokens.remove(0);
 				counterOperation++;
 			} else if (tokens.get(0).getTokenType() == 15) {
 				arr.add("(");
@@ -340,12 +359,13 @@ public class SyntaticAnalyzer {
 			}
 		}
 		if (flag && counterID - counterOperation == 1) {
-			new AssignStatementHandler().infixToPostfix(arr, dist);
+			new AssignStatementHandler(codeGenerator,arr,dist);
 			counterID = counterOperation = 0;
 			return true;
 		}
 		return false;
 	}
+	//Method 17: Check Validity of an expression inside an assign stmt.
 	private boolean exp(ArrayList<String> arr) {
 		while (tokens.get(0).getTokenType() != 16) {
 			if (tokens.get(0).getTokenType() == 17) {
@@ -382,9 +402,4 @@ public class SyntaticAnalyzer {
 		}
 		return false;
 	}
-
-	public String getAssemblyCode(){
-        return assemblyCode;
-    }
-
 }

@@ -24,7 +24,6 @@ import java.util.ArrayList;
 public class CodeEditorFragment extends Fragment  {
     private FloatingActionButton fab;
     private EditText etCode;
-    private LexicalAnalyzer lexicalAnalyzer;
     CodeEditorFragment.CodeEditorCallbacks callbacks;
 
     public CodeEditorFragment(CodeEditorCallbacks callbacks){
@@ -39,10 +38,6 @@ public class CodeEditorFragment extends Fragment  {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        lexicalAnalyzer = new LexicalAnalyzer();
-
-
-
     }
 
     @Nullable
@@ -51,21 +46,20 @@ public class CodeEditorFragment extends Fragment  {
         View view = inflater.inflate(R.layout.code_editor_layout,container,false);
 
         etCode = (EditText) view.findViewById(R.id.et_code);
-
-
         fab = (FloatingActionButton) view.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer();
                 ArrayList<Token> tokens = lexicalAnalyzer.tokenize(etCode.getText().toString());
                 SyntaticAnalyzer syntaticAnalyzer = new SyntaticAnalyzer(tokens);
                 System.out.println(etCode.getText());
                 boolean parse = syntaticAnalyzer.Parse();
                 if (parse){
                     callbacks.onCompiled(syntaticAnalyzer.getAssemblyCode());
-                }else {
-                    callbacks.onCompiled(syntaticAnalyzer.getAssemblyCode());
+                    AssignStatementHandler.counterT = 0;
 
+                }else {
                     Toast.makeText(getContext(),"Compilation Error" , Toast.LENGTH_LONG).show();
                 }
             }
@@ -74,7 +68,9 @@ public class CodeEditorFragment extends Fragment  {
         return view;
     }
 
-
+    public void setEtCode(String string){
+        etCode.setText(string);
+    }
     public void readFile(String pathName) {
 
         File dirPath = Environment.getRootDirectory();
