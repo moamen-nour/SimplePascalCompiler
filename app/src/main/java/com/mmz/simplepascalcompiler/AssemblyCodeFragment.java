@@ -11,14 +11,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 public class AssemblyCodeFragment extends Fragment {
-
     private TextView assemblyTV;
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -26,10 +23,9 @@ public class AssemblyCodeFragment extends Fragment {
         assemblyTV = view.findViewById(R.id.assembly_code_tv);
         return view;
     }
-
-    public void setAssembelledCode(String code){
+    public void setAssembledCode(String code){
         if (TextUtils.isEmpty(code))
-            assemblyTV.setText("No assembeled code");
+            assemblyTV.setText(R.string.Empty_textView);
         else
             assemblyTV.setText(code);
 

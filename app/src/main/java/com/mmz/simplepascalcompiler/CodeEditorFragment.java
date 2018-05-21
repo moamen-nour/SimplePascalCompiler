@@ -25,21 +25,16 @@ public class CodeEditorFragment extends Fragment  {
     private FloatingActionButton fab;
     private EditText etCode;
     CodeEditorFragment.CodeEditorCallbacks callbacks;
-
     public CodeEditorFragment(CodeEditorCallbacks callbacks){
         this.callbacks = callbacks;
     }
-
-
     public interface CodeEditorCallbacks{
         void onCompiled(String assembly);
     }
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -51,87 +46,33 @@ public class CodeEditorFragment extends Fragment  {
             @Override
             public void onClick(View view) {
                 LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer();
-                ArrayList<Token> tokens = lexicalAnalyzer.tokenize(etCode.getText().toString());
-                SyntaticAnalyzer syntaticAnalyzer = new SyntaticAnalyzer(tokens);
-                System.out.println(etCode.getText());
-                boolean parse = syntaticAnalyzer.Parse();
-                if (parse){
-                    callbacks.onCompiled(syntaticAnalyzer.getAssemblyCode());
-                    AssignStatementHandler.counterT = 0;
+                if(etCode.getText().toString().equals("")){
+                    Toast.makeText(getContext(), "No Code Error, start Coding first !", Toast.LENGTH_LONG).show();
+                }
+                else {
+                    ArrayList<Token> tokens = lexicalAnalyzer.tokenize(etCode.getText().toString());
+                    if(tokens.isEmpty()){
+                        Toast.makeText(getContext(), "Syntax Error, use Pascal Grammar !", Toast.LENGTH_LONG).show();
+                    }
+                    else {
+                        SyntaticAnalyzer syntaticAnalyzer = new SyntaticAnalyzer(tokens);
+                        boolean parse = syntaticAnalyzer.Parse();
+                        if (parse) {
+                            callbacks.onCompiled(syntaticAnalyzer.getAssemblyCode());
+                            AssignStatementHandler.counterT = 0;
 
-                }else {
-                    Toast.makeText(getContext(),"Compilation Error" , Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(getContext(), "Compilation Error, check your code !", Toast.LENGTH_LONG).show();
+                        }
+                    }
                 }
             }
         });
-
         return view;
     }
 
     public void setEtCode(String string){
         etCode.setText(string);
-    }
-    public void readFile(String pathName) {
-
-        File dirPath = Environment.getRootDirectory();
-
-//        File dirPath = EnvironmentStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        //create the file object using the file path.
-        File file = new File(dirPath, "sdcard/Download/1.txt");
-        file.setReadable(true);
-        file.setExecutable(true);
-        file.setWritable(true);
-        System.out.println("result of mkdir:" + file.mkdirs());
-        if (file.exists())
-            etCode.append("file exists: " + true);
-        if (file.isDirectory())
-            etCode.append("\nfile is directory: " + true);
-        System.out.println(file.setReadable(true));
-        if (file.canRead())
-            etCode.append("\nfile can read: " + true);
-        if (file.isFile())
-            etCode.append("\nfile is file: " + true);
-        if (file.canExecute())
-            etCode.append("\nfile can execute: " + true);
-
-        StringBuilder code = new StringBuilder();
-
-        try {
-            FileReader fileReader = new FileReader(file);
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-            String line = "";
-            while ((line = bufferedReader.readLine()) != null){
-                code.append(line);
-            }
-
-            bufferedReader.close();
-            fileReader.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        etCode.append(code);
-
-
-    }
-
-    //Checks if the External Storage is ready for reading.
-    private static boolean isExternalStorageReadOnly() {
-        String extStorageState = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(extStorageState)) {
-            return true;
-        }
-        return false;
-    }
-
-    private static boolean isExternalStorageAvailable() {
-        String extStorageState = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(extStorageState)) {
-            return true;
-        }
-        return false;
     }
 
 }

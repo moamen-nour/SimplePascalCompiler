@@ -17,7 +17,6 @@ public class LexicalAnalyzer {
         pattern = Pattern.compile("(?<token>PROGRAM|VAR|BEGIN|END\\.|END|FOR|READ|WRITE|TO|DO|;|:=|\\+|,|\\(|\\)|[a-zA-Z][\\w]*|\\*)");
     }
     //Matcher.Group function needs a minimum SDK of 26. Suppressed Warning for now.
-    @SuppressLint("NewApi")
     //Tokenize method returns the array list of tokens analyzed from the source statements of the program.
     public ArrayList<Token> tokenize(String code){
         Matcher matcher = pattern.matcher(code);
